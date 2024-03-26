@@ -2,7 +2,8 @@ import Movies from "./Movies"
 import useSearch from "./hooks/useSearch"
 import useMovies from "./hooks/useMovies"
 import './App.css'
-import { useState } from "react"
+import { useCallback, useState } from "react"
+import debounce from "just-debounce-it"
 
 function App() {
   const { search, error,  setSearch} = useSearch()
@@ -16,12 +17,19 @@ function App() {
 
   const handleChange = (event) => {
     const newSearch = event.target.value
-    setSearch({ search: newSearch })
+    setSearch(newSearch)
+    debouncedGetMovies(newSearch)
   }
 
   const handleSort = () => {
     setSort(!sort)
   }
+
+  const debouncedGetMovies = useCallback(
+    debounce(search => getMovies({ search }), 500),
+    [getMovies]
+  )
+
   return (
     <>
     <h1>Search movies</h1>
